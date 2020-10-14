@@ -1,4 +1,4 @@
-# covid-stats
+# COVID-19 statistics
 
 ## About the app
 ### Requirements
