@@ -7,7 +7,7 @@
     <v-row>
       <v-col>
         <v-progress-circular
-          v-if="isLoading"
+          v-if="loadingRegions"
           :size="50"
           color="amber"
           indeterminate
@@ -19,6 +19,8 @@
           <v-row>
             <v-col :cols="8">
               <v-autocomplete
+                v-model="selectedRegion"
+                item-value="iso"
                 solo
                 :items="regions"
                 color="white"
@@ -31,6 +33,7 @@
               <v-btn
                 large
                 color="success"
+                @click="setRegion"
               >
                 Apply
               </v-btn>
@@ -40,7 +43,18 @@
       </v-col>
     </v-row>
 
-    <daily-cases-chart />
+    <v-progress-circular
+      v-if="loadingCases"
+      :size="50"
+      color="amber"
+      indeterminate
+    ></v-progress-circular>
+
+    <daily-cases-chart
+      v-if="!loadingCases && dailyCases.length > 0"
+      :dates-range="datesRange"
+      :daily-cases="dailyCases"
+    />
   </v-container>
 </template>
 
@@ -49,6 +63,8 @@ import Vue from 'vue'
 import axios from 'axios';
 import sortBy from 'lodash/sortBy';
 import DailyCasesChart from "@/components/DailyCasesChart.vue";
+import dayjs from "dayjs";
+import sumBy from "lodash/sumBy";
 
 export default Vue.extend({
   name: 'CovidStats',
@@ -58,20 +74,61 @@ export default Vue.extend({
   },
 
   data: () => ({
-    isLoading: false,
+    loadingRegions: false,
+    loadingCases: false,
     regions: [] as any[],
+    dailyCases: [] as any[],
+    datesRange: [] as string[],
+    selectedRegion: null,
   }),
 
   created() {
-    this.isLoading = true;
+    this.loadingRegions = true;
+
+    this.datesRange = this.generateDatesRange(90);
 
     axios.get('https://covid-api.com/api/regions')
       .then(({ data: items }) => {
         this.regions = sortBy(items.data, 'name');
       })
       .finally(() => {
-        this.isLoading = false;
-      })
+        this.loadingRegions = false;
+      });
+  },
+
+  methods: {
+    generateDatesRange(nDays: number): string[] {
+      const today = dayjs();
+      const datesRange = [];
+
+      for (let i = 1; i <= nDays; i++) {
+        datesRange.push(today.subtract(i, 'd').format('YYYY-MM-DD'));
+      }
+
+      return datesRange;
+    },
+    parseDailyNewCases(report: any[]): number[] {
+      return report.map(({ data }) => sumBy(data.data, 'confirmed_diff'));
+    },
+    setRegion() {
+      this.loadingCases = true;
+      this.dailyCases = [];
+
+      Promise.all(this.datesRange.map((date: string) => {
+        return axios.get('https://covid-api.com/api/reports', {
+          params: {
+            iso: this.selectedRegion,
+            date
+          }
+        })
+      }))
+        .then((results) => {
+          this.dailyCases = this.parseDailyNewCases(results);
+        })
+        .finally(() => {
+          this.loadingCases = false;
+        })
+    }
   }
 })
 </script>

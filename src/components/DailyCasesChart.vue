@@ -1,6 +1,12 @@
 <template>
   <v-container>
-    <apexchart width="500" type="bar" :options="options" :series="series"></apexchart>
+    <apexchart
+      width="1200"
+      height="700"
+      type="bar"
+      :options="options"
+      :series="series"
+    ></apexchart>
   </v-container>
 </template>
 
@@ -13,20 +19,35 @@ Vue.component('apexchart', VueApexCharts);
 export default Vue.extend({
   name: 'DailyCasesChart',
 
-  data: () => ({
-    options: {
-      chart: {
-        id: 'vuechart-example'
-      },
-      xaxis: {
-        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
+  props: {
+    dailyCases: {
+      type: Array,
+      default: () => [],
+    },
+    datesRange: {
+      type: Array,
+      default: () => [],
+    },
+  },
+
+  computed: {
+    options() {
+      return {
+        chart: {
+          id: 'daily-cases'
+        },
+        xaxis: {
+          categories: this.datesRange,
+        }
       }
     },
-    series: [{
-      name: 'series-1',
-      data: [30, 40, 45, 50, 49, 60, 70, 91]
-    }]
-  }),
+    series() {
+      return [{
+        name: 'Daily new cases',
+        data: this.dailyCases,
+      }];
+    },
+  },
 })
 </script>
 
