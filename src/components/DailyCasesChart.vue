@@ -10,7 +10,7 @@
 
     <apexchart
       width="1200"
-      height="700"
+      height="500"
       :options="options"
       :series="series"
     ></apexchart>
