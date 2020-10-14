@@ -65,6 +65,8 @@ import sortBy from 'lodash/sortBy';
 import DailyCasesChart from "@/components/DailyCasesChart.vue";
 import dayjs from "dayjs";
 import sumBy from "lodash/sumBy";
+import { Region } from "@/models/Region";
+import { Report } from "@/models/Report";
 
 export default Vue.extend({
   name: 'CovidStats',
@@ -76,8 +78,8 @@ export default Vue.extend({
   data: () => ({
     loadingRegions: false,
     loadingCases: false,
-    regions: [] as any[],
-    dailyCases: [] as any[],
+    regions: [] as Region[],
+    dailyCases: [] as number[],
     datesRange: [] as string[],
     selectedRegion: null,
   }),
@@ -87,7 +89,7 @@ export default Vue.extend({
 
     this.datesRange = this.generateDatesRange(90);
 
-    axios.get('https://covid-api.com/api/regions')
+    axios.get('regions')
       .then(({ data: items }) => {
         this.regions = sortBy(items.data, 'name');
       })
@@ -107,15 +109,14 @@ export default Vue.extend({
 
       return datesRange;
     },
-    parseDailyNewCases(report: any[]): number[] {
+    parseDailyNewCases(report: { data: { data: Report[] } }[]): number[] {
       return report.map(({ data }) => sumBy(data.data, 'confirmed_diff'));
     },
     setRegion() {
-      this.loadingCases = true;
-      this.dailyCases = [];
+      this.reset();
 
       Promise.all(this.datesRange.map((date: string) => {
-        return axios.get('https://covid-api.com/api/reports', {
+        return axios.get('reports', {
           params: {
             iso: this.selectedRegion,
             date
@@ -128,6 +129,10 @@ export default Vue.extend({
         .finally(() => {
           this.loadingCases = false;
         })
+    },
+    reset() {
+      this.loadingCases = true;
+      this.dailyCases = [];
     }
   }
 })

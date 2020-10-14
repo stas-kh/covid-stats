@@ -54,7 +54,30 @@ export default Vue.extend({
         stroke: {
           width: [0, 2]
         },
-        colors: ['#f57c00', '#88b5dd']
+        colors: ['#f57c00', '#88b5dd'],
+        tooltip: {
+          enabled: true,
+          shared: false,
+          intersect: true,
+          x: {
+            show: false,
+          },
+          y: {
+            formatter(value: string) {
+              return parseInt(value);
+            },
+          },
+        },
+        yaxis: {
+          labels: {
+            formatter(value: string) {
+              return parseInt(value);
+            },
+          },
+          title: {
+            text: 'Total daily new cases of the selected country',
+          },
+        },
       }
     },
     series() {
