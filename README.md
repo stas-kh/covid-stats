@@ -8,6 +8,8 @@ Remote URL: https://pure-atoll-22658.herokuapp.com/
 
 Total time spent: **3h 30m** (including deployment)
 
+![Repo image](/docs/repo-img.png)
+
 ## Technical details
 
 ### Project setup
