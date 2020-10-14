@@ -45,3 +45,11 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss">
+@media (min-width: 1904px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+</style>

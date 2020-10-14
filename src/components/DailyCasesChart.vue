@@ -1,9 +1,16 @@
 <template>
   <v-container>
+    <v-slider
+      v-model="movingAverage"
+      label="Moving average"
+      thumb-label="always"
+      :min="1"
+      :max="90"
+    ></v-slider>
+
     <apexchart
       width="1200"
       height="700"
-      type="bar"
       :options="options"
       :series="series"
     ></apexchart>
@@ -13,11 +20,16 @@
 <script lang="ts">
 import Vue from 'vue';
 import VueApexCharts from 'vue-apexcharts';
+import sma from 'sma';
 
 Vue.component('apexchart', VueApexCharts);
 
 export default Vue.extend({
   name: 'DailyCasesChart',
+
+  data: () => ({
+    movingAverage: 8,
+  }),
 
   props: {
     dailyCases: {
@@ -38,13 +50,22 @@ export default Vue.extend({
         },
         xaxis: {
           categories: this.datesRange,
-        }
+        },
+        stroke: {
+          width: [0, 2]
+        },
+        colors: ['#f57c00', '#88b5dd']
       }
     },
     series() {
       return [{
+        type: 'column',
         name: 'Daily new cases',
         data: this.dailyCases,
+      }, {
+        type: 'line',
+        name: 'Moving average',
+        data: sma(this.dailyCases, this.movingAverage)
       }];
     },
   },
