@@ -100,11 +100,11 @@ export default Vue.extend({
 
   methods: {
     generateDatesRange(nDays: number): string[] {
-      const today = dayjs();
+      const today = dayjs().subtract(nDays, "d");
       const datesRange = [];
 
       for (let i = 1; i <= nDays; i++) {
-        datesRange.push(today.subtract(i, 'd').format('YYYY-MM-DD'));
+        datesRange.push(today.add(i, 'd').format('YYYY-MM-DD'));
       }
 
       return datesRange;

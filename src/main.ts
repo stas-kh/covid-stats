@@ -4,7 +4,7 @@ import router from './router'
 import vuetify from './plugins/vuetify';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'https://covid-api.com/api/';
+axios.defaults.baseURL = `${document.location.origin}/api`;
 
 Vue.config.productionTip = false
 
