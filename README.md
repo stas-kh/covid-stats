@@ -4,7 +4,7 @@
 ### Requirements
 Create a dashboard-like application which uses the publicly available data  of the COVID-19 pandemic. The app should show the progression of the average number of daily new cases for a country, as well as the corresponding confidence interval.
 
-Remote URL: https://pure-atoll-22658.herokuapp.com/
+Remote URL: https://covid19-online-stats.herokuapp.com
 
 Total time spent: **3h 30m** (including deployment)
 
